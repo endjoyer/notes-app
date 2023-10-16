@@ -23,3 +23,23 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem; */
 }
+
+.react-resizable {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+}
+.react-resizable-handle {
+  display: block;
+  background-color: #000;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+
+.react-resizable-handle-e {
+  width: 5px;
+  height: 100vh;
+  cursor: row-resize;
+  background-color: #000000;
+}
