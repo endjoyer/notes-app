@@ -6,7 +6,7 @@ const Note = ({ note, provided, innerRef }) => (
     {...provided.dragHandleProps}
     ref={innerRef}
   >
-    <Link legacyBehavior href="/note/[id]" as={`/note/${note.id}`}>
+    <Link legacyBehavior href={`/note/${note.id}`} as={`/note/${note.id}`}>
       <a>
         <h2>{note.title}</h2>
       </a>

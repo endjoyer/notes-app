@@ -1,23 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { NotesContext } from '../../context/NotesContext';
 
-const NotePage = () => {
-  const [note, setNote] = useState();
+const NotePage = ({ note }) => {
   const router = useRouter();
   const { id } = router.query;
+  const { notes, setNotes } = useContext(NotesContext);
 
   useEffect(() => {
-    fetchNote();
+    const fetchNote = async () => {
+      const res = await fetch(`http://localhost:3001/notes/${id}`);
+      const note = await res.json();
+      setNotes((prevNotes) => [
+        ...prevNotes.filter((note) => note.id !== id),
+        note,
+      ]);
+    };
+
+    if (notes.length === 0) {
+      fetchNote();
+    }
   }, [id]);
 
-  const fetchNote = async () => {
-    const res = await fetch(`/api/notes/${id}`);
-    const { data } = await res.json();
-    console.log(data);
-    setNote(data);
+  const deleteNote = async () => {
+    try {
+      await fetch(`/api/notes/${id}`, {
+        method: 'DELETE',
+      });
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+      router.push('/');
+    } catch (error) {
+      console.error(error);
+    }
   };
-  console.log(id);
 
   return (
     <div className="container">
@@ -27,6 +43,13 @@ const NotePage = () => {
           <Link legacyBehavior href={`${id}/edit`}>
             <a className="btn btn-primary">Edit</a>
           </Link>
+          <button
+            onClick={deleteNote}
+            className="btn btn-danger"
+            style={{ marginLeft: '10px' }}
+          >
+            Delete
+          </button>
         </>
       ) : (
         <div>Loading...</div>
@@ -34,5 +57,23 @@ const NotePage = () => {
     </div>
   );
 };
+
+export async function getStaticPaths() {
+  const res = await fetch('http://localhost:3001/notes');
+  const notes = await res.json();
+
+  const paths = notes.map((note) => ({
+    params: { id: note.id.toString() },
+  }));
+
+  return { paths, fallback: 'blocking' };
+}
+
+export async function getStaticProps({ params }) {
+  const res = await fetch(`http://localhost:3001/notes/${params.id}`);
+  const note = await res.json();
+
+  return { props: { note }, revalidate: 1 };
+}
 
 export default NotePage;

@@ -1,23 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import { ResizableBox } from 'react-resizable';
-import NoteList from '../components/NoteList';
+import dynamic from 'next/dynamic';
+import { NotesContext } from '../context/NotesContext';
 
-const Home = ({ notes }) => {
+const DynamicNoteList = dynamic(() => import('../components/NoteList'), {
+  ssr: false,
+});
+
+const Home = ({ initialNotes }) => {
+  const { notes, setNotes } = useContext(NotesContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [isSortingAscending, setIsSortingAscending] = useState(true);
-
-  const handleSort = () => {
-    setIsSortingAscending(!isSortingAscending);
-    setSearchResults(
-      [...searchResults].sort((a, b) =>
-        isSortingAscending
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title)
-      )
-    );
-  };
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
@@ -32,14 +26,30 @@ const Home = ({ notes }) => {
   };
 
   useEffect(() => {
+    setNotes(initialNotes);
+  }, [initialNotes, setNotes]);
+
+  useEffect(() => {
+    setSearchResults(notes);
+  }, [notes]);
+
+  useEffect(() => {
     const results = notes.filter((note) =>
-      note.title.toLowerCase().includes(searchTerm)
+      note.title ? note.title.toLowerCase().includes(searchTerm) : false
     );
     setSearchResults(results);
   }, [searchTerm]);
+  console.log(notes);
+  console.log(searchResults);
 
   return (
-    <ResizableBox width={200} height={Infinity}>
+    <ResizableBox
+      width={200}
+      height={Infinity}
+      minConstraints={[200, Infinity]}
+      maxConstraints={[500, Infinity]}
+      resizeHandles={['e']}
+    >
       <div className="container">
         <h1 className="my-4">Notes</h1>
         <Link legacyBehavior href="/new">
@@ -52,22 +62,22 @@ const Home = ({ notes }) => {
           value={searchTerm}
           onChange={handleChange}
         />
-        <button className="btn btn-secondary mb-4 ml-2" onClick={handleSort}>
-          Sort
-        </button>
-
-        <NoteList notes={searchResults} handleOnDragEnd={handleOnDragEnd} />
+        <DynamicNoteList
+          notes={searchResults}
+          handleOnDragEnd={handleOnDragEnd}
+        />
       </div>
     </ResizableBox>
   );
 };
 
-export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/notes');
-  const { data } = await res.json();
+export async function getStaticProps() {
+  const res = await fetch('http://localhost:3001/notes');
+  const initialNotes = await res.json();
 
   return {
-    props: { notes: data },
+    props: { initialNotes },
+    revalidate: 1,
   };
 }
 
