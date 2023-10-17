@@ -51,7 +51,11 @@ const NewNote = () => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          title: form.title,
+          description: form.body,
+          user: userId,
+        }),
       });
       const newNote = await res.json();
       setNotes((prevNotes) => [...prevNotes, newNote]);

@@ -1,31 +1,30 @@
-// eslint-disable-next-line import/no-anonymous-default-export
-export default async (req, res) => {
+import dbConnect from '../../utils/dbConnect';
+import Note from '../../models/Note';
+
+export default async function handler(req, res) {
   const { method } = req;
+
+  await dbConnect();
 
   switch (method) {
     case 'GET':
-      const response = await fetch('http://localhost:3001/notes');
-      const notes = await response.json();
-      res.status(200).json({ data: notes });
+      try {
+        const notes = await Note.find({});
+        res.status(200).json({ success: true, data: notes });
+      } catch (error) {
+        res.status(400).json(error.message);
+      }
       break;
     case 'POST':
-      const note = {
-        id: Date.now().toString(),
-        title: req.body.title,
-        body: req.body.body,
-      };
-      const postResponse = await fetch('http://localhost:3001/notes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(note),
-      });
-      const newNote = await postResponse.json();
-      res.status(201).json({ data: newNote });
+      try {
+        const note = await Note.create(req.body);
+        res.status(201).json({ success: true, data: note });
+      } catch (error) {
+        res.status(400).json(error.message);
+      }
       break;
     default:
-      res.setHeader('Allow', ['GET', 'POST']);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(400).json(error.message);
+      break;
   }
-};
+}

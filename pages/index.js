@@ -1,28 +1,58 @@
-import { useEffect, useContext } from 'react';
-import { NotesContext } from '../context/NotesContext';
+import { useSession, getSession } from 'next-auth/react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-const Home = ({ initialNotes }) => {
-  const { setNotes } = useContext(NotesContext);
+export default function Home() {
+  const [session, loading] = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    setNotes(initialNotes);
-  }, [initialNotes, setNotes]);
+    if (!loading && !session) {
+      router.push('/login');
+    }
+  }, [loading, session]);
 
+  if (loading || !session) {
+    return <div>Loading...</div>;
+  }
   return (
     <main className="main">
-      <h1 className="main__title">Notes</h1>
+      <h1 className="main__title">Welcome, {session.user.username}!</h1>
     </main>
   );
-};
+}
 
-export async function getStaticProps() {
-  const res = await fetch('http://localhost:3001/notes');
-  const initialNotes = await res.json();
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session || !session.user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  const res = await fetch(
+    `http://localhost:3000/api/notes?user=${session.user.id}`
+  );
+  const data = await res.json();
+
+  const initialNotes = Array.isArray(data) ? data : [];
 
   return {
     props: { initialNotes },
-    revalidate: 1,
   };
 }
 
-export default Home;
+// export async function getServerSideProps() {
+//   const res = await fetch('http://localhost:3000/api/notes');
+//   const data = await res.json();
+
+//   const initialNotes = Array.isArray(data) ? data : [];
+
+//   return {
+//     props: { initialNotes },
+//   };
+// }

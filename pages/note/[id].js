@@ -11,7 +11,7 @@ const NotePage = ({ note }) => {
 
   useEffect(() => {
     const fetchNote = async () => {
-      const res = await fetch(`http://localhost:3001/notes/${id}`);
+      const res = await fetch(`/api/notes/${id}`);
       const note = await res.json();
       setNotes((prevNotes) => [
         ...prevNotes.filter((note) => note.id !== id),
@@ -59,22 +59,13 @@ const NotePage = ({ note }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await fetch('http://localhost:3001/notes');
-  const notes = await res.json();
+export async function getServerSideProps({ params }) {
+  const res = await fetch(`http://localhost:3000/api/notes/${params.id}`);
+  const data = await res.json();
 
-  const paths = notes.map((note) => ({
-    params: { id: note.id.toString() },
-  }));
+  const note = Array.isArray(data) ? data[0] : data;
 
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
-  const res = await fetch(`http://localhost:3001/notes/${params.id}`);
-  const note = await res.json();
-
-  return { props: { note }, revalidate: 1 };
+  return { props: { note } };
 }
 
 export default NotePage;

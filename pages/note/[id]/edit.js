@@ -101,22 +101,11 @@ const EditNote = ({ note }) => {
   );
 };
 
-export async function getStaticProps({ params }) {
-  const res = await fetch(`http://localhost:3001/notes/${params.id}`);
+export async function getServerSideProps({ params }) {
+  const res = await fetch(`http://localhost:3000/api/notes/${params.id}`);
   const note = await res.json();
 
-  return { props: { note }, revalidate: 1 };
-}
-
-export async function getStaticPaths() {
-  const res = await fetch('http://localhost:3001/notes');
-  const notes = await res.json();
-
-  const paths = notes.map((note) => ({
-    params: { id: note.id.toString() },
-  }));
-
-  return { paths, fallback: 'blocking' };
+  return { props: { note } };
 }
 
 export default EditNote;
