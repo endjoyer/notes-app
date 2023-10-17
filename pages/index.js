@@ -1,18 +1,27 @@
-import NoteList from '../components/NoteList';
+import { useEffect, useContext } from 'react';
+import { NotesContext } from '../context/NotesContext';
 
-const Home = ({ notes }) => (
-  <div>
-    <h1>Notes</h1>
-    <NoteList notes={notes} />
-  </div>
-);
+const Home = ({ initialNotes }) => {
+  const { setNotes } = useContext(NotesContext);
 
-export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/notes');
-  const { data } = await res.json();
+  useEffect(() => {
+    setNotes(initialNotes);
+  }, [initialNotes, setNotes]);
+
+  return (
+    <main className="main">
+      <h1 className="main__title">Notes</h1>
+    </main>
+  );
+};
+
+export async function getStaticProps() {
+  const res = await fetch('http://localhost:3001/notes');
+  const initialNotes = await res.json();
 
   return {
-    props: { notes: data },
+    props: { initialNotes },
+    revalidate: 1,
   };
 }
 
