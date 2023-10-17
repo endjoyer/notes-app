@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { NotesContext } from '../../context/NotesContext';
+import Loader from '../../components/Loader';
 
 const NotePage = ({ note }) => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const NotePage = ({ note }) => {
     if (notes.length === 0) {
       fetchNote();
     }
-  }, [id]);
+  }, [id, notes.length, setNotes]);
 
   const deleteNote = async () => {
     try {
@@ -52,7 +53,7 @@ const NotePage = ({ note }) => {
           </button>
         </>
       ) : (
-        <div>Loading...</div>
+        <Loader />
       )}
     </div>
   );

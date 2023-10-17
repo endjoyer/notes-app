@@ -1,3 +1,5 @@
+@import url('./hamburger');
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -10,9 +12,6 @@ body {
   overflow-x: hidden;
 }
 
-body {
-}
-
 a {
   text-decoration: none;
 }
@@ -21,11 +20,19 @@ a {
   padding: 30px;
 }
 
+.main {
+  display: flex;
+}
+
+.main__title {
+  margin: auto;
+}
 .react-resizable {
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
+  background-color: #ededed;
 }
 .react-resizable-handle {
   display: block;
@@ -37,6 +44,19 @@ a {
 .react-resizable-handle-e {
   width: 5px;
   height: 100vh;
-  cursor: row-resize;
-  background-color: #000000;
+  cursor: e-resize;
+  background-color: #545342;
+}
+
+.layout__contend {
+  padding: 30px 20px;
+}
+.layout__container {
+  display: 'flex';
+  min-height: 100vh;
+}
+
+.note__title {
+  white-space: nowrap;
+  overflow: hidden;
 }

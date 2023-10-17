@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { NotesContext } from '../../../context/NotesContext';
+import Loader from '../../../components/Loader';
 
 const EditNote = ({ note }) => {
   const [form, setForm] = useState({ title: '', body: '' });
@@ -61,35 +62,41 @@ const EditNote = ({ note }) => {
 
   return (
     <div className="container">
-      <h1 className="my-4">Edit Note</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            type="text"
-            className="form-control  my-2"
-            name="title"
-            placeholder="Title"
-            value={form.title}
-            onChange={handleChange}
-          />
-          {errors.title && <div>{errors.title}</div>}
-        </div>
-        <div className="form-group">
-          <textarea
-            className="form-control"
-            name="body"
-            placeholder="Text"
-            value={form.body}
-            onChange={handleChange}
-          />
-          {errors.body && <div>{errors.body}</div>}
-        </div>
-        <div className="form-group my-4">
-          <button className="btn btn-primary" type="submit">
-            Update
-          </button>
-        </div>
-      </form>
+      {!isSubmitting ? (
+        <>
+          <h1 className="my-4">Edit Note</h1>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="text"
+                className="form-control  my-2"
+                name="title"
+                placeholder="Title"
+                value={form.title}
+                onChange={handleChange}
+              />
+              {errors.title && <div>{errors.title}</div>}
+            </div>
+            <div className="form-group">
+              <textarea
+                className="form-control"
+                name="body"
+                placeholder="Text"
+                value={form.body}
+                onChange={handleChange}
+              />
+              {errors.body && <div>{errors.body}</div>}
+            </div>
+            <div className="form-group my-4">
+              <button className="btn btn-primary" type="submit">
+                Update
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 };

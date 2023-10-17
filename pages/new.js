@@ -1,6 +1,7 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { NotesContext } from '../context/NotesContext';
+import Loader from '../components/Loader';
 
 const NewNote = () => {
   const [form, setForm] = useState({ title: '', body: '' });
@@ -38,6 +39,10 @@ const NewNote = () => {
     return err;
   };
 
+  useEffect(() => {
+    setNotes(notes);
+  }, [notes, setNotes]);
+
   const createNote = async () => {
     try {
       const res = await fetch('/api/notes', {
@@ -49,7 +54,7 @@ const NewNote = () => {
         body: JSON.stringify(form),
       });
       const newNote = await res.json();
-      setNotes((prevNotes) => [newNote, ...prevNotes]);
+      setNotes((prevNotes) => [...prevNotes, newNote]);
       router.push('/');
     } catch (error) {
       console.error(error);
@@ -58,36 +63,46 @@ const NewNote = () => {
 
   return (
     <div className="container">
-      <h1 className="my-4">Create Note</h1>
-      <form className="form-group" onSubmit={handleSubmit}>
-        <div>
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            className="form-control my-2"
-            value={form.title}
-            onChange={handleChange}
-          />
-          {errors.title && <div>{errors.title}</div>}
-        </div>
-        <div className="form-group">
-          <textarea
-            name="body"
-            placeholder="Text"
-            className="form-control"
-            value={form.body}
-            onChange={handleChange}
-          />
-          {errors.body && <div>{errors.body}</div>}
-        </div>
-        <div className="form-group">
-          <button className=" form-group btn btn-primary my-4" type="submit">
-            Create
-          </button>
-        </div>
-      </form>
+      {!isSubmitting ? (
+        <>
+          <h1 className="my-4">Create Note</h1>
+          <form className="form-group" onSubmit={handleSubmit}>
+            <div>
+              <input
+                type="text"
+                name="title"
+                placeholder="Title"
+                className="form-control my-2"
+                value={form.title}
+                onChange={handleChange}
+              />
+              {errors.title && <div>{errors.title}</div>}
+            </div>
+            <div className="form-group">
+              <textarea
+                name="body"
+                placeholder="Text"
+                className="form-control"
+                value={form.body}
+                onChange={handleChange}
+              />
+              {errors.body && <div>{errors.body}</div>}
+            </div>
+            <div className="form-group">
+              <button
+                className=" form-group btn btn-primary my-4"
+                type="submit"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 };
+
 export default NewNote;

@@ -7,10 +7,13 @@ const NoteList = ({ notes, handleOnDragEnd }) => (
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
           {notes.map((note, index) => (
-            <Draggable key={note.id} draggableId={note.id} index={index}>
+            <Draggable
+              key={note?.id}
+              draggableId={note?.id?.toString()}
+              index={index}
+            >
               {(provided) => (
                 <Note
-                  key={note.id}
                   note={note}
                   provided={provided}
                   innerRef={provided.innerRef}

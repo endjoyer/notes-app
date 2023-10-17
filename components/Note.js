@@ -8,7 +8,7 @@ const Note = ({ note, provided, innerRef }) => (
   >
     <Link legacyBehavior href={`/note/${note.id}`} as={`/note/${note.id}`}>
       <a>
-        <h2>{note.title}</h2>
+        <h2 className="note__title">{note.title}</h2>
       </a>
     </Link>
     <hr />
