@@ -1,9 +1,10 @@
-import { useState, useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import nextCookies from 'next-cookies';
+import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../../context/NotesContext';
 import Loader from '../../components/Loader';
 
@@ -15,20 +16,6 @@ const NotePage = ({ note, initialNotes }) => {
   useEffect(() => {
     setNotes(initialNotes);
   }, [initialNotes, setNotes]);
-
-  // useEffect(() => {
-  //   const fetchNote = async () => {
-  //     const res = await axios.get(`http://localhost:3000/notes/${id}`, {
-  //       headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-  //     });
-  //     const fetchedNote = res.data;
-  //     setNotes(fetchedNote);
-  //   };
-
-  //   if (notes.length === 0) {
-  //     fetchNote();
-  //   }
-  // }, [id, notes.length, setNotes]);
 
   const deleteNote = async () => {
     try {
@@ -66,6 +53,8 @@ const NotePage = ({ note, initialNotes }) => {
 
 export async function getServerSideProps(context) {
   const { token } = nextCookies(context);
+  const { userId } = jwtDecode(token);
+  const { id } = context.params;
 
   if (!token) {
     return {
@@ -76,16 +65,20 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const { id } = context.params;
-
-  const responseNote = await axios.get(`http://localhost:3000/notes/${id}`, {
-    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-  });
+  const responseNote = await axios.get(
+    `http://localhost:3000/notes/${id}?userId=${userId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   const note = responseNote.data;
 
-  const responseNotes = await axios.get('http://localhost:3000/notes', {
-    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-  });
+  const responseNotes = await axios.get(
+    `http://localhost:3000/notes?userId=${userId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   const initialNotes = responseNotes.data;
 
   return {

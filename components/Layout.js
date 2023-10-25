@@ -19,6 +19,8 @@ const Layout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const isLogOrRegPage =
+    router.pathname === '/login' || router.pathname === '/register';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -100,6 +102,7 @@ const Layout = ({ children }) => {
           </div>
         ) : (
           <ResizableBox
+            className=""
             width={resizableBoxWidth}
             height={Infinity}
             minConstraints={[200, Infinity]}
@@ -109,7 +112,11 @@ const Layout = ({ children }) => {
               setResizableBoxWidth(data.size.width);
             }}
           >
-            <div className="container layout__contend">
+            <div
+              className={`container layout__contend ${
+                isLogOrRegPage && 'layout__contend_none'
+              }`}
+            >
               <h1 className="my-4">Notes</h1>
               <div className="btns__container">
                 <button className="btn btn-danger" onClick={handleLogout}>
@@ -133,9 +140,16 @@ const Layout = ({ children }) => {
             </div>
           </ResizableBox>
         )}
-        <div style={!isMobile ? { marginLeft: resizableBoxWidth } : {}}>
+        <main
+          className="main"
+          style={
+            !isMobile && !isLogOrRegPage
+              ? { marginLeft: resizableBoxWidth }
+              : {}
+          }
+        >
           {children}
-        </div>
+        </main>
       </div>
     </>
   );

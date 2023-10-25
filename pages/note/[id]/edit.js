@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import nextCookies from 'next-cookies';
+import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../../../context/NotesContext';
 import Loader from '../../../components/Loader';
 
@@ -35,6 +36,7 @@ const EditNote = ({ note, initialNotes }) => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({});
   };
 
   const validate = () => {
@@ -48,10 +50,6 @@ const EditNote = ({ note, initialNotes }) => {
     return err;
   };
 
-  // useEffect(() => {
-  //   setNotes(notes);
-  // }, [notes, setNotes]);
-
   const updateNote = async () => {
     try {
       await axios.put(`http://localhost:3000/notes/${id}`, form, {
@@ -62,7 +60,9 @@ const EditNote = ({ note, initialNotes }) => {
       );
       router.push(`/note/${id}`);
     } catch (error) {
-      console.error(error);
+      setErrors({
+        body: error.response ? error.response.data.message : error.message,
+      });
     }
   };
 
@@ -79,7 +79,10 @@ const EditNote = ({ note, initialNotes }) => {
             value={form.title}
             onChange={handleChange}
           />
-          {errors.title && <div>{errors.title}</div>}
+
+          <span className={`text-error ${errors.body && 'text-error_visible'}`}>
+            {errors.title}
+          </span>
         </div>
         <div className="form-group">
           <textarea
@@ -89,7 +92,9 @@ const EditNote = ({ note, initialNotes }) => {
             value={form.body}
             onChange={handleChange}
           />
-          {errors.body && <div>{errors.body}</div>}
+          <span className={`text-error ${errors.body && 'text-error_visible'}`}>
+            {errors.body}
+          </span>
         </div>
         <div className="form-group my-4">
           <button className="btn btn-primary" type="submit">
@@ -117,13 +122,17 @@ export async function getServerSideProps(context) {
   const { id } = context.params;
 
   const responseNote = await axios.get(`http://localhost:3000/notes/${id}`, {
-    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   const note = responseNote.data;
 
-  const responseNotes = await axios.get('http://localhost:3000/notes', {
-    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-  });
+  const { userId } = jwtDecode(token);
+  const responseNotes = await axios.get(
+    `http://localhost:3000/notes?userId=${userId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   const initialNotes = responseNotes.data;
 
   return {

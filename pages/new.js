@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import nextCookies from 'next-cookies';
+import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../context/NotesContext';
 import Loader from '../components/Loader';
 
@@ -33,6 +34,7 @@ const NewNote = ({ initialNotes }) => {
       ...form,
       [e.target.name]: e.target.value,
     });
+    setErrors({});
   };
 
   const validate = () => {
@@ -49,7 +51,6 @@ const NewNote = ({ initialNotes }) => {
   useEffect(() => {
     if (notes.length !== 0) {
       setNotes(notes);
-      console.log(notes);
     } else {
       setNotes(initialNotes);
     }
@@ -57,15 +58,22 @@ const NewNote = ({ initialNotes }) => {
 
   const createNote = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/notes', form, {
-        headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-      });
+      const { userId } = jwtDecode(Cookies.get('token'));
+      const response = await axios.post(
+        'http://localhost:3000/notes',
+        { ...form, userId },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+        }
+      );
 
       setNotes((prevNotes) => [...prevNotes, response.data]);
       form.body = '';
       form.title = '';
     } catch (error) {
-      console.error(error);
+      setErrors({
+        body: error.response ? error.response.data.message : error.message,
+      });
     }
   };
 
@@ -82,9 +90,11 @@ const NewNote = ({ initialNotes }) => {
             value={form.title}
             onChange={handleChange}
           />
-          {errors.title && <div>{errors.title}</div>}
+          <span className={`text-error ${errors.body && 'text-error_visible'}`}>
+            {errors.title}
+          </span>
         </div>
-        <div className="form-group">
+        <div className="form-group my-2">
           <textarea
             name="body"
             placeholder="Text"
@@ -92,7 +102,9 @@ const NewNote = ({ initialNotes }) => {
             value={form.body}
             onChange={handleChange}
           />
-          {errors.body && <div>{errors.body}</div>}
+          <span className={`text-error ${errors.body && 'text-error_visible'}`}>
+            {errors.body}
+          </span>
         </div>
         <div className="form-group">
           <button className=" form-group btn btn-primary my-4" type="submit">
@@ -116,7 +128,8 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const res = await axios.get('http://localhost:3000/notes', {
+  const { userId } = jwtDecode(token);
+  const res = await axios.get(`http://localhost:3000/notes?userId=${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const initialNotes = res.data;

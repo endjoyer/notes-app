@@ -1,6 +1,7 @@
 import { useEffect, useContext } from 'react';
 import axios from 'axios';
 import nextCookies from 'next-cookies';
+import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../context/NotesContext';
 
 const Home = ({ initialNotes }) => {
@@ -10,15 +11,12 @@ const Home = ({ initialNotes }) => {
     setNotes(initialNotes);
   }, [initialNotes, setNotes]);
 
-  return (
-    <main className="main">
-      <h1 className="main__title">Notes</h1>
-    </main>
-  );
+  return <h1 className="main__title">Notes</h1>;
 };
 
 export async function getServerSideProps(context) {
   const { token } = nextCookies(context);
+
   if (!token) {
     return {
       redirect: {
@@ -27,9 +25,11 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const res = await axios.get('http://localhost:3000/notes', {
+  const { userId } = jwtDecode(token);
+  const res = await axios.get(`http://localhost:3000/notes?userId=${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
   const initialNotes = res.data;
 
   return {
