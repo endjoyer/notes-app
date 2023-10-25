@@ -4,15 +4,12 @@ import nextCookies from 'next-cookies';
 import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../context/NotesContext';
 
-export default function Home() {
-  const [session, loading] = useSession();
-  const router = useRouter();
+const Home = ({ initialNotes }) => {
+  const { setNotes } = useContext(NotesContext);
 
   useEffect(() => {
-    if (!loading && !session) {
-      router.push('/login');
-    }
-  }, [loading, session]);
+    setNotes(initialNotes);
+  }, [initialNotes, setNotes]);
 
   return <h1 className="main__title">Notes</h1>;
 };
@@ -40,13 +37,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-// export async function getServerSideProps() {
-//   const res = await fetch('http://localhost:3000/api/notes');
-//   const data = await res.json();
-
-//   const initialNotes = Array.isArray(data) ? data : [];
-
-//   return {
-//     props: { initialNotes },
-//   };
-// }
+export default Home;
