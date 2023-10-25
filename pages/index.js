@@ -1,4 +1,6 @@
 import { useEffect, useContext } from 'react';
+import axios from 'axios';
+import nextCookies from 'next-cookies';
 import { NotesContext } from '../context/NotesContext';
 
 const Home = ({ initialNotes }) => {
@@ -15,13 +17,23 @@ const Home = ({ initialNotes }) => {
   );
 };
 
-export async function getStaticProps() {
-  const res = await fetch('http://localhost:3001/notes');
-  const initialNotes = await res.json();
+export async function getServerSideProps(context) {
+  const { token } = nextCookies(context);
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+  const res = await axios.get('http://localhost:3000/notes', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const initialNotes = res.data;
 
   return {
     props: { initialNotes },
-    revalidate: 1,
   };
 }
 

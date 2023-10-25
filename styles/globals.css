@@ -17,6 +17,7 @@ a {
 }
 
 .container {
+  position: relative;
   padding: 30px;
 }
 
@@ -28,7 +29,7 @@ a {
   margin: auto;
 }
 .react-resizable {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   display: flex;
@@ -42,21 +43,33 @@ a {
 }
 
 .react-resizable-handle-e {
-  width: 5px;
-  height: 100vh;
+  width: 7px;
   cursor: e-resize;
   background-color: #545342;
+  transition: all 0.15s ease 0s;
+}
+
+.react-resizable-handle-e:hover {
+  background-color: #7e7c65;
 }
 
 .layout__contend {
   padding: 30px 20px;
+  min-height: 100vh;
+  overflow-y: hidden;
 }
 .layout__container {
   display: 'flex';
   min-height: 100vh;
 }
 
+.btns__container {
+  display: flex;
+  gap: 10px;
+}
+
 .note__title {
   white-space: nowrap;
   overflow: hidden;
+  font-size: 18px;
 }

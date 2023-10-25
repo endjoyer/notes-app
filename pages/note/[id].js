@@ -1,35 +1,40 @@
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import nextCookies from 'next-cookies';
 import { NotesContext } from '../../context/NotesContext';
 import Loader from '../../components/Loader';
 
-const NotePage = ({ note }) => {
+const NotePage = ({ note, initialNotes }) => {
   const router = useRouter();
   const { id } = router.query;
   const { notes, setNotes } = useContext(NotesContext);
 
   useEffect(() => {
-    const fetchNote = async () => {
-      const res = await fetch(`http://localhost:3001/notes/${id}`);
-      const note = await res.json();
-      setNotes((prevNotes) => [
-        ...prevNotes.filter((note) => note.id !== id),
-        note,
-      ]);
-    };
+    setNotes(initialNotes);
+  }, [initialNotes, setNotes]);
 
-    if (notes.length === 0) {
-      fetchNote();
-    }
-  }, [id, notes.length, setNotes]);
+  // useEffect(() => {
+  //   const fetchNote = async () => {
+  //     const res = await axios.get(`http://localhost:3000/notes/${id}`, {
+  //       headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+  //     });
+  //     const fetchedNote = res.data;
+  //     setNotes(fetchedNote);
+  //   };
+
+  //   if (notes.length === 0) {
+  //     fetchNote();
+  //   }
+  // }, [id, notes.length, setNotes]);
 
   const deleteNote = async () => {
     try {
-      await fetch(`/api/notes/${id}`, {
-        method: 'DELETE',
+      await axios.delete(`http://localhost:3000/notes/${note._id}`, {
+        headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
       router.push('/');
     } catch (error) {
       console.error(error);
@@ -59,22 +64,33 @@ const NotePage = ({ note }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await fetch('http://localhost:3001/notes');
-  const notes = await res.json();
+export async function getServerSideProps(context) {
+  const { token } = nextCookies(context);
 
-  const paths = notes.map((note) => ({
-    params: { id: note.id.toString() },
-  }));
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
 
-  return { paths, fallback: 'blocking' };
-}
+  const { id } = context.params;
 
-export async function getStaticProps({ params }) {
-  const res = await fetch(`http://localhost:3001/notes/${params.id}`);
-  const note = await res.json();
+  const responseNote = await axios.get(`http://localhost:3000/notes/${id}`, {
+    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+  });
+  const note = responseNote.data;
 
-  return { props: { note }, revalidate: 1 };
+  const responseNotes = await axios.get('http://localhost:3000/notes', {
+    headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+  });
+  const initialNotes = responseNotes.data;
+
+  return {
+    props: { note, initialNotes },
+  };
 }
 
 export default NotePage;
