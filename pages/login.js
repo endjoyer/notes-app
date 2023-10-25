@@ -16,7 +16,7 @@ const Login = () => {
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
       try {
-        const res = await axios.post('http://localhost:3000/auth/login', {
+        const res = await axios.post('http://localhost:3000/api/auth/login', {
           username,
           password,
         });

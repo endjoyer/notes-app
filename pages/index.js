@@ -25,10 +25,15 @@ export async function getServerSideProps(context) {
       },
     };
   }
+
   const { userId } = jwtDecode(token);
-  const res = await axios.get(`http://localhost:3000/notes?userId=${userId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+
+  const res = await axios.get(
+    `http://localhost:3000/api/notes?userId=${userId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
   const initialNotes = res.data;
 

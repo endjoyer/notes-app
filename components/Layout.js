@@ -37,14 +37,14 @@ const Layout = ({ children }) => {
 
     const token = Cookies.get('token');
     await axios.put(
-      `http://localhost:3000/notes/${reorderedItem._id}/position`,
+      `http://localhost:3000/api/notes/${reorderedItem._id}/position`,
       { position: result.destination.index },
       { headers: { Authorization: `Bearer ${token}` } }
     );
   };
 
   const handleLogout = async () => {
-    await axios.post('http://localhost:3000/auth/logout');
+    await axios.post('http://localhost:3000/api/auth/logout');
     Cookies.remove('token');
     router.push('/login');
   };

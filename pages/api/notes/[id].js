@@ -7,9 +7,12 @@ export default async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const response = await axios.get(`http://localhost:3000/notes/${id}`, {
-          headers: { Authorization: req.headers.authorization },
-        });
+        const response = await axios.get(
+          `http://localhost:3000/api/notes/${id}`,
+          {
+            headers: { Authorization: req.headers.authorization },
+          }
+        );
         res.status(200).json(response.data);
       } catch (err) {
         res.status(err.response.status).json({ message: err.message });
@@ -18,7 +21,7 @@ export default async (req, res) => {
     case 'PUT':
       try {
         const response = await axios.put(
-          `http://localhost:3000/notes/${id}`,
+          `http://localhost:3000/api/notes/${id}`,
           req.body,
           {
             headers: { Authorization: req.headers.authorization },
@@ -31,7 +34,7 @@ export default async (req, res) => {
       break;
     case 'DELETE':
       try {
-        await axios.delete(`http://localhost:3000/notes/${id}`, {
+        await axios.delete(`http://localhost:3000/api/notes/${id}`, {
           headers: { Authorization: req.headers.authorization },
         });
         res.status(200).json({ message: 'Note deleted.' });

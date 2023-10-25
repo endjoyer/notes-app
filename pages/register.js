@@ -15,7 +15,7 @@ const Register = () => {
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
       try {
-        await axios.post('http://localhost:3000/auth/register', {
+        await axios.post('http://localhost:3000/api/auth/register', {
           username,
           password,
         });

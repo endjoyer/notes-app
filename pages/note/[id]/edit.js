@@ -52,7 +52,7 @@ const EditNote = ({ note, initialNotes }) => {
 
   const updateNote = async () => {
     try {
-      await axios.put(`http://localhost:3000/notes/${id}`, form, {
+      await axios.put(`http://localhost:3000/api/notes/${id}`, form, {
         headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
       setNotes((prevNotes) =>
@@ -121,14 +121,17 @@ export async function getServerSideProps(context) {
 
   const { id } = context.params;
 
-  const responseNote = await axios.get(`http://localhost:3000/notes/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const responseNote = await axios.get(
+    `http://localhost:3000/api/notes/${id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   const note = responseNote.data;
 
   const { userId } = jwtDecode(token);
   const responseNotes = await axios.get(
-    `http://localhost:3000/notes?userId=${userId}`,
+    `http://localhost:3000/api/notes?userId=${userId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }

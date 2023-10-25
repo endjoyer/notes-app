@@ -19,7 +19,7 @@ const NotePage = ({ note, initialNotes }) => {
 
   const deleteNote = async () => {
     try {
-      await axios.delete(`http://localhost:3000/notes/${note._id}`, {
+      await axios.delete(`http://localhost:3000/api/notes/${note._id}`, {
         headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
       router.push('/');
@@ -66,7 +66,7 @@ export async function getServerSideProps(context) {
   }
 
   const responseNote = await axios.get(
-    `http://localhost:3000/notes/${id}?userId=${userId}`,
+    `http://localhost:3000/api/notes/${id}?userId=${userId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }
@@ -74,7 +74,7 @@ export async function getServerSideProps(context) {
   const note = responseNote.data;
 
   const responseNotes = await axios.get(
-    `http://localhost:3000/notes?userId=${userId}`,
+    `http://localhost:3000/api/notes?userId=${userId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }

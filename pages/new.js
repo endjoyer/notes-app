@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import nextCookies from 'next-cookies';
@@ -15,7 +14,6 @@ const NewNote = ({ initialNotes }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const router = useRouter();
   const { notes, setNotes } = useContext(NotesContext);
 
   const handleSubmit = async (e) => {
@@ -60,7 +58,7 @@ const NewNote = ({ initialNotes }) => {
     try {
       const { userId } = jwtDecode(Cookies.get('token'));
       const response = await axios.post(
-        'http://localhost:3000/notes',
+        'http://localhost:3000/api/notes',
         { ...form, userId },
         {
           headers: { Authorization: `Bearer ${Cookies.get('token')}` },
@@ -129,9 +127,12 @@ export async function getServerSideProps(context) {
   }
 
   const { userId } = jwtDecode(token);
-  const res = await axios.get(`http://localhost:3000/notes?userId=${userId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await axios.get(
+    `http://localhost:3000/api/notes?userId=${userId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   const initialNotes = res.data;
 
   return {
