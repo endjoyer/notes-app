@@ -18,7 +18,13 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.prepare().then(() => {
   const server = express();
 
-  server.use(cors());
+  server.use(
+    cors({
+      origin: 'https://notes-app-endjoyer.vercel.app',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    })
+  );
   server.use(express.json());
   server.use('/api/notes', notesRouter);
   server.use('/api/auth', authRouter);
