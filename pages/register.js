@@ -39,14 +39,14 @@ const Register = () => {
 
   return (
     <div className="container">
-      <h2>Register</h2>
+      <h2 className="my-3">Register</h2>
       <form onSubmit={handleSubmit} className="form-group">
         <input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="form-control my-2"
+          className="form-control my-1"
         />
         <span
           className={`text-error ${errors.username && 'text-error_visible'}`}
@@ -58,7 +58,7 @@ const Register = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="form-control my-2"
+          className="form-control my-1"
         />
         <span
           className={`text-error ${errors.password && 'text-error_visible'}`}
