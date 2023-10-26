@@ -3,7 +3,6 @@ import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
-import { SERVER_URL } from '../utils/constants';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -17,8 +16,7 @@ const Login = () => {
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
       try {
-        console.log(SERVER_URL);
-        const res = await axios.post(`${SERVER_URL}/api/auth/login`, {
+        const res = await axios.post(`/api/auth/login`, {
           username,
           password,
         });

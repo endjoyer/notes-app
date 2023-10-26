@@ -20,7 +20,7 @@ const NotePage = ({ note, initialNotes }) => {
 
   const deleteNote = async () => {
     try {
-      await axios.delete(`${SERVER_URL}/api/notes/${note._id}`, {
+      await axios.delete(`/api/notes/${note._id}`, {
         headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
       router.push('/');

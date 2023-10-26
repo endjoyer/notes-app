@@ -28,7 +28,6 @@ export async function getServerSideProps(context) {
   }
 
   const { userId } = jwtDecode(token);
-
   const res = await axios.get(`${SERVER_URL}/api/notes?userId=${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
