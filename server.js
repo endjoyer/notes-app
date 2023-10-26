@@ -20,7 +20,8 @@ app.prepare().then(() => {
 
   server.use(
     cors({
-      origin: 'https://notes-app-endjoyer.vercel.app',
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     })
   );
