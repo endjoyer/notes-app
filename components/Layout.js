@@ -78,7 +78,11 @@ const Layout = ({ children }) => {
               id="menu"
               style={{ transform: isMenuOpen ? 'none' : 'translate(-100%, 0)' }}
             >
-              <h1 className="my-4">Notes</h1>
+              <Link href="/">
+                <a>
+                  <h1 className="my-4">Notes</h1>
+                </a>
+              </Link>
               <div className="btns__container">
                 <button className="btn btn-danger" onClick={handleLogout}>
                   Logout
@@ -117,7 +121,11 @@ const Layout = ({ children }) => {
                 isLogOrRegPage && 'layout__contend_none'
               }`}
             >
-              <h1 className="my-4">Notes</h1>
+              <Link href="/">
+                <a>
+                  <h1 className="my-4 d-inline-block">Notes</h1>
+                </a>
+              </Link>
               <div className="btns__container">
                 <button className="btn btn-danger" onClick={handleLogout}>
                   Logout
