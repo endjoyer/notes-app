@@ -5,6 +5,7 @@ import nextCookies from 'next-cookies';
 import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../context/NotesContext';
 import Loader from '../components/Loader';
+import { SERVER_URL } from '../utils/constants';
 
 const NewNote = ({ initialNotes }) => {
   const [form, setForm] = useState({
@@ -58,7 +59,7 @@ const NewNote = ({ initialNotes }) => {
     try {
       const { userId } = jwtDecode(Cookies.get('token'));
       const response = await axios.post(
-        'http://localhost:3000/api/notes',
+        `${SERVER_URL}/api/notes`,
         { ...form, userId },
         {
           headers: { Authorization: `Bearer ${Cookies.get('token')}` },
@@ -127,12 +128,9 @@ export async function getServerSideProps(context) {
   }
 
   const { userId } = jwtDecode(token);
-  const res = await axios.get(
-    `http://localhost:3000/api/notes?userId=${userId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const res = await axios.get(`${SERVER_URL}/api/notes?userId=${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   const initialNotes = res.data;
 
   return {

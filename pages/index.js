@@ -3,6 +3,7 @@ import axios from 'axios';
 import nextCookies from 'next-cookies';
 import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../context/NotesContext';
+import { SERVER_URL } from '../utils/constants';
 
 const Home = ({ initialNotes }) => {
   const { setNotes } = useContext(NotesContext);
@@ -28,12 +29,9 @@ export async function getServerSideProps(context) {
 
   const { userId } = jwtDecode(token);
 
-  const res = await axios.get(
-    `http://localhost:3000/api/notes?userId=${userId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const res = await axios.get(`${SERVER_URL}/api/notes?userId=${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   const initialNotes = res.data;
 

@@ -7,6 +7,7 @@ import nextCookies from 'next-cookies';
 import jwtDecode from 'jwt-decode';
 import { NotesContext } from '../../context/NotesContext';
 import Loader from '../../components/Loader';
+import { SERVER_URL } from '../../utils/constants';
 
 const NotePage = ({ note, initialNotes }) => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const NotePage = ({ note, initialNotes }) => {
 
   const deleteNote = async () => {
     try {
-      await axios.delete(`http://localhost:3000/api/notes/${note._id}`, {
+      await axios.delete(`${SERVER_URL}/api/notes/${note._id}`, {
         headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
       router.push('/');
@@ -66,7 +67,7 @@ export async function getServerSideProps(context) {
   }
 
   const responseNote = await axios.get(
-    `http://localhost:3000/api/notes/${id}?userId=${userId}`,
+    `${SERVER_URL}/api/notes/${id}?userId=${userId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }
@@ -74,7 +75,7 @@ export async function getServerSideProps(context) {
   const note = responseNote.data;
 
   const responseNotes = await axios.get(
-    `http://localhost:3000/api/notes?userId=${userId}`,
+    `${SERVER_URL}/api/notes?userId=${userId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }

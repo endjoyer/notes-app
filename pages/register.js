@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { SERVER_URL } from '../utils/constants';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -15,7 +16,7 @@ const Register = () => {
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
       try {
-        await axios.post('http://localhost:3000/api/auth/register', {
+        await axios.post(`${SERVER_URL}/api/auth/register`, {
           username,
           password,
         });
