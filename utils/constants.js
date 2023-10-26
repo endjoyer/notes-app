@@ -7,7 +7,7 @@ if (typeof window === 'undefined') {
   serverUrl =
     location.hostname === 'localhost'
       ? 'http://localhost:3000'
-      : 'https://notes-app-henna.vercel.app';
+      : 'https://notes-app-endjoy.vercel.app';
 }
 
 export const SERVER_URL = serverUrl;
