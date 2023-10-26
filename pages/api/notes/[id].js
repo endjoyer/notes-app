@@ -1,46 +1,43 @@
-// eslint-disable-next-line import/no-anonymous-default-export
+import axios from 'axios';
+import { SERVER_URL } from '../../../utils/constants';
+
 export default async (req, res) => {
   const { method } = req;
   const { id } = req.query;
 
   switch (method) {
     case 'GET':
-      const getResponse = await fetch(`http://localhost:3001/notes/${id}`);
-      const note = await getResponse.json();
-      if (note) {
-        res.status(200).json({ data: note });
-      } else {
-        res.status(404).json({ message: 'Note not found.' });
+      try {
+        const response = await axios.get(`${SERVER_URL}/api/notes/${id}`, {
+          headers: { Authorization: req.headers.authorization },
+        });
+        res.status(200).json(response.data);
+      } catch (err) {
+        res.status(err.response.status).json({ message: err.message });
       }
       break;
     case 'PUT':
-      const updatedNote = {
-        id,
-        title: req.body.title,
-        body: req.body.body,
-      };
-      const putResponse = await fetch(`http://localhost:3001/notes/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedNote),
-      });
-      const noteAfterUpdate = await putResponse.json();
-      if (noteAfterUpdate) {
-        res.status(200).json({ data: noteAfterUpdate });
-      } else {
-        res.status(404).json({ message: 'Note not found.' });
+      try {
+        const response = await axios.put(
+          `${SERVER_URL}/api/notes/${id}`,
+          req.body,
+          {
+            headers: { Authorization: req.headers.authorization },
+          }
+        );
+        res.status(200).json(response.data);
+      } catch (err) {
+        res.status(err.response.status).json({ message: err.message });
       }
       break;
     case 'DELETE':
-      const deleteResponse = await fetch(`http://localhost:3001/notes/${id}`, {
-        method: 'DELETE',
-      });
-      if (deleteResponse.status === 200) {
-        res.status(200).json({ data: {}, message: 'Note deleted.' });
-      } else {
-        res.status(404).json({ message: 'Note not found.' });
+      try {
+        await axios.delete(`${SERVER_URL}/api/notes/${id}`, {
+          headers: { Authorization: req.headers.authorization },
+        });
+        res.status(200).json({ message: 'Note deleted.' });
+      } catch (err) {
+        res.status(err.response.status).json({ message: err.message });
       }
       break;
     default:
