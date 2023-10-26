@@ -59,7 +59,7 @@ const NewNote = ({ initialNotes }) => {
     try {
       const { userId } = jwtDecode(Cookies.get('token'));
       const response = await axios.post(
-        `${SERVER_URL}/api/notes`,
+        `/api/notes`,
         { ...form, userId },
         {
           headers: { Authorization: `Bearer ${Cookies.get('token')}` },

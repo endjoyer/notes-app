@@ -6,7 +6,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { NotesContext } from '../context/NotesContext';
 import { useRouter } from 'next/router';
-import { SERVER_URL } from '../utils/constants';
 
 const DynamicNoteList = dynamic(() => import('./NoteList'), {
   ssr: false,
@@ -38,14 +37,14 @@ const Layout = ({ children }) => {
 
     const token = Cookies.get('token');
     await axios.put(
-      `${SERVER_URL}/api/notes/${reorderedItem._id}/position`,
+      `/api/notes/${reorderedItem._id}/position`,
       { position: result.destination.index },
       { headers: { Authorization: `Bearer ${token}` } }
     );
   };
 
   const handleLogout = async () => {
-    await axios.post(`${SERVER_URL}/api/auth/logout`);
+    await axios.post(`/api/auth/logout`);
     Cookies.remove('token');
     router.push('/login');
   };

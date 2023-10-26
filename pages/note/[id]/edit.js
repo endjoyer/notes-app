@@ -53,7 +53,7 @@ const EditNote = ({ note, initialNotes }) => {
 
   const updateNote = async () => {
     try {
-      await axios.put(`${SERVER_URL}/api/notes/${id}`, form, {
+      await axios.put(`/api/notes/${id}`, form, {
         headers: { Authorization: `Bearer ${Cookies.get('token')}` },
       });
       setNotes((prevNotes) =>

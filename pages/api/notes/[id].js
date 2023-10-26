@@ -1,47 +1,50 @@
-import axios from 'axios';
-import { SERVER_URL } from '../../../utils/constants';
+import Note from '../../../models/Note';
+import dbConnect from '../../../utils/dbConnect';
 
-export default async (req, res) => {
+export default async function handler(req, res) {
   const { method } = req;
   const { id } = req.query;
+
+  await dbConnect();
 
   switch (method) {
     case 'GET':
       try {
-        const response = await axios.get(`${SERVER_URL}/api/notes/${id}`, {
-          headers: { Authorization: req.headers.authorization },
-        });
-        res.status(200).json(response.data);
+        const note = await Note.findById(id);
+        if (note == null) {
+          return res.status(404).json({ message: 'Cannot find note' });
+        }
+        res.json(note);
       } catch (err) {
-        res.status(err.response.status).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
       }
       break;
     case 'PUT':
       try {
-        const response = await axios.put(
-          `${SERVER_URL}/api/notes/${id}`,
-          req.body,
-          {
-            headers: { Authorization: req.headers.authorization },
-          }
-        );
-        res.status(200).json(response.data);
+        const updatedNote = await Note.findByIdAndUpdate(id, req.body, {
+          new: true,
+        });
+        if (updatedNote == null) {
+          return res.status(404).json({ message: 'Cannot find note' });
+        }
+        res.json(updatedNote);
       } catch (err) {
-        res.status(err.response.status).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
       }
       break;
     case 'DELETE':
       try {
-        await axios.delete(`${SERVER_URL}/api/notes/${id}`, {
-          headers: { Authorization: req.headers.authorization },
-        });
-        res.status(200).json({ message: 'Note deleted.' });
+        const deletedNote = await Note.findByIdAndRemove(id);
+        if (deletedNote == null) {
+          return res.status(404).json({ message: 'Cannot find note' });
+        }
+        res.json({ message: 'Note deleted' });
       } catch (err) {
-        res.status(err.response.status).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
       }
       break;
     default:
       res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
-};
+}
