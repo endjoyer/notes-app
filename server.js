@@ -20,9 +20,9 @@ app.prepare().then(() => {
 
   server.use(
     cors({
-      origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      origin: 'https://notes-app-endjoyer.vercel.app',
       credentials: true,
+      maxAge: 60,
     })
   );
   server.use(express.json());

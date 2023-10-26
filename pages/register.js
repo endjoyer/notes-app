@@ -16,10 +16,19 @@ const Register = () => {
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
       try {
-        await axios.post(`${SERVER_URL}/api/auth/register`, {
-          username,
-          password,
-        });
+        await axios.post(
+          `${SERVER_URL}/api/auth/register`,
+          {
+            username,
+            password,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          }
+        );
         router.push('/login');
       } catch (err) {
         console.error(err);
